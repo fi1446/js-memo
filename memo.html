@@ -31,11 +31,11 @@ save(text);
 
 //セーブ機能
 var save = function(text) {
-	var data1 = new Object();
-	data1.text = text;
-	obj.new = data1;
-	localStorage.setItem("entry1", JSON.stringify(obj));
-	console.log(localStorage.entry1);
+var data1 = new Object();
+data1.text = text;
+obj.new = data1;
+localStorage.setItem("entry1", JSON.stringify(obj));
+console.log(localStorage.entry1);
 };
 
 //表示機能
@@ -43,17 +43,17 @@ $(function(){
 $('#display').on('click', function(){
 var data = localStorage.getItem("entry1");
 _tmp = JSON.parse(data);
-	$('#list').children().remove();
-	$('#list').append('<li>' + _tmp.new.text + '</li>');
+$('#list').children().remove();
+$('#list').append('<li>' + _tmp.new.text + '</li>');
 });
 });
 
 //既存のメモを表示
 if (localStorage.entry1 !== undefined) {
-	console.log('データがあります。');
+console.log('データがあります。');
 var data = localStorage.getItem("entry1");
 _tmp = JSON.parse(data);
-	$('#list').append('<li>' + _tmp.new.text + '</li>');
+$('#list').append('<li>' + _tmp.new.text + '</li>');
 }
 
 

@@ -20,7 +20,7 @@
 <script src="jquery-1.12.3.min.js"></script>
 <script>
 
-//グローバル変数
+//グローバル変数（ネームスペース）宣言
 var MYAPP = MYAPP || {};
 
 
@@ -30,19 +30,19 @@ MYAPP.tmpData = new Object();
 
 //メモをオブジェクト化する機能
 MYAPP.createMemo = function(text) {
-	var that = {};
-	that.idx = Object.keys(MYAPP.storedData).length + 1;
-	that.text = text;
-	return that;
+var that = {};
+that.idx = Object.keys(MYAPP.storedData).length + 1;
+that.text = text;
+return that;
 };
 
 
 //初期化する際に最初のメモをオブジェクト化する機能
 MYAPP.initializeMemo = function(text) {
-	var that = {};
-	that.idx = 1;
-	that.text = text;
-	return that;
+var that = {};
+that.idx = 1;
+that.text = text;
+return that;
 };
 
 
@@ -55,7 +55,7 @@ localStorage.setItem('bigData', JSON.stringify(tmpData));
 //LSのデータを一時的に引っ張ってくる機能
 MYAPP.storedData = (function() {
 var data = (function() {
-	return localStorage.getItem('bigData');
+return localStorage.getItem('bigData');
 })();
 var savedData = JSON.parse(data);
 return savedData;
@@ -69,7 +69,7 @@ if (MYAPP.storedData !== null) {
 return;
 } else {
 var datalist = (function() {
-	return MYAPP.initializeMemo(yourFirstMemo);
+return MYAPP.initializeMemo(yourFirstMemo);
 })();
 var tmpNum = 'memo' + datalist.idx;
 MYAPP.tmpData[tmpNum] = datalist;
@@ -115,10 +115,10 @@ var _tmp = JSON.parse(data);
 var idx = Object.keys(MYAPP.storedData).length;
 var tmpNum = 'memo' + idx;
 $('#list').children().remove();
-	var _text = '';
-	for (var memo in _tmp) {
-	_text += '<li>' + _tmp[memo].text + '</li>';
-	}
+var _text = '';
+for (var memo in _tmp) {
+_text += '<li>' + _tmp[memo].text + '</li>';
+}
 $('#list').append(_text);
 }
 
@@ -128,30 +128,32 @@ MYAPP.display = (function(){
 var data = localStorage.getItem('bigData');
 _tmp = JSON.parse(data);
 $('#list').children().remove();
-	var _text = '';
-	for (var memo in _tmp) {
-	_text += '<li>' + _tmp[memo].text + '</li>';
-	}
+var _text = '';
+for (var memo in _tmp) {
+_text += '<li>' + _tmp[memo].text + '</li>';
+}
 $('#list').append(_text);
 })();
 MYAPP.display;
 
+
+//表示ボタンの機能
 $('#display').on('click', function(){
 var data = localStorage.getItem('bigData');
 _tmp = JSON.parse(data);
 $('#list').children().remove();
-	var _text = '';
-	for (var memo in _tmp) {
-	_text += '<li>' + _tmp[memo].text + '</li>';
-	}
+var _text = '';
+for (var memo in _tmp) {
+_text += '<li>' + _tmp[memo].text + '</li>';
+}
 $('#list').append(_text);
 });
 
 
 //削除機能
 $('#delete').on('click', function(){
-	localStorage.clear();
-	$('#list').children().remove();
+localStorage.clear();
+$('#list').children().remove();
 });
 
 
