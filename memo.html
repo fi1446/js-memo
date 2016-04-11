@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+</head>
+<body>
+
+<input type="text" name="text" id="text">
+<button id="save">button</button>
+
+<button id="display">display</button>
+
+<ul id="list">
+</ul>
+
+
+<script src="jquery-1.12.3.min.js"></script>
+<script>
+
+//格納場所
+var obj = obj || {};
+
+//データの取得、格納、保存
+$(function(){
+$('#save').on('click', function(){
+var text = $(':text[name="text"]').val();
+save(text);
+});
+});
+
+//セーブ機能
+var save = function(text) {
+	var data1 = new Object();
+	data1.text = text;
+	obj.new = data1;
+	localStorage.setItem("entry1", JSON.stringify(obj));
+	console.log(localStorage.entry1);
+};
+
+//表示機能
+$(function(){
+$('#display').on('click', function(){
+var data = localStorage.getItem("entry1");
+_tmp = JSON.parse(data);
+	$('#list').children().remove();
+	$('#list').append('<li>' + _tmp.new.text + '</li>');
+});
+});
+
+//既存のメモを表示
+if (localStorage.entry1 !== undefined) {
+	console.log('データがあります。');
+var data = localStorage.getItem("entry1");
+_tmp = JSON.parse(data);
+	$('#list').append('<li>' + _tmp.new.text + '</li>');
+}
+
+
+//LS保存サンプル
+// var datalist = {
+// data1: "hoge1",
+// data2: "hoge2"
+// }
+// localStorage.setItem("datalist", JSON.stringify(datalist));
+
+
+</script>
+
+</body>
+</html>

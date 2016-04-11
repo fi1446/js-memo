@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+</head>
+<body>
+
+<input type="text" name="text" id="text">
+<button id="save">button</button>
+<button id="display">display</button>
+<button id="delete">delete</button>
+
+<br>
+<h2>最新のメモ：</h2>
+<ul id="list">
+</ul>
+
+
+<script src="jquery-1.12.3.min.js"></script>
+<script>
+
+//グローバル変数
+var MYAPP = MYAPP || {};
+
+
+//初期化データの格納場所
+MYAPP.tmpData = new Object();
+
+
+//メモをオブジェクト化する機能
+MYAPP.createMemo = function(text) {
+	var that = {};
+	that.idx = Object.keys(MYAPP.storedData).length + 1;
+	that.text = text;
+	return that;
+};
+
+
+//初期化する際に最初のメモをオブジェクト化する機能
+MYAPP.initializeMemo = function(text) {
+	var that = {};
+	that.idx = 1;
+	that.text = text;
+	return that;
+};
+
+
+//オブジェクトをLSにプッシュする機能
+var pushData = function(tmpData){
+localStorage.setItem('bigData', JSON.stringify(tmpData));
+};
+
+
+//LSのデータを一時的に引っ張ってくる機能
+MYAPP.storedData = (function() {
+var data = (function() {
+	return localStorage.getItem('bigData');
+})();
+var savedData = JSON.parse(data);
+return savedData;
+})();
+
+
+//初期化機能
+MYAPP.initData = (function() {
+var yourFirstMemo = "これが最初のメモです。";
+if (MYAPP.storedData !== null) {
+return;
+} else {
+var datalist = (function() {
+	return MYAPP.initializeMemo(yourFirstMemo);
+})();
+var tmpNum = 'memo' + datalist.idx;
+MYAPP.tmpData[tmpNum] = datalist;
+pushData(MYAPP.tmpData);
+}
+})();
+
+
+//初期化
+MYAPP.initData;
+
+
+//メモの数の確認（デバッグ用）
+console.log(MYAPP.storedData);
+
+
+//メモのセーブ機能
+MYAPP.saveData = function(text) {
+var bigData = MYAPP.storedData;
+var _tmp = new MYAPP.createMemo(text);
+var tmpNum = 'memo' + _tmp.idx;
+console.log(_tmp.idx);
+console.log(tmpNum);
+bigData[tmpNum] = _tmp;
+pushData(bigData);
+};
+
+
+//データの取得、格納、保存
+$(function(){
+$('#save').on('click', function(){
+var text = $(':text[name="text"]').val();
+MYAPP.saveData(text);
+$(':text[name="text"]').val('');
+});
+});
+
+
+//既存のメモを表示
+if (localStorage.bigData !== undefined) {
+var data = localStorage.getItem('bigData');
+var _tmp = JSON.parse(data);
+var idx = Object.keys(MYAPP.storedData).length;
+var tmpNum = 'memo' + idx;
+$('#list').children().remove();
+	var _text = '';
+	for (var memo in _tmp) {
+	_text += '<li>' + _tmp[memo].text + '</li>';
+	}
+$('#list').append(_text);
+}
+
+
+//表示機能
+MYAPP.display = (function(){
+var data = localStorage.getItem('bigData');
+_tmp = JSON.parse(data);
+$('#list').children().remove();
+	var _text = '';
+	for (var memo in _tmp) {
+	_text += '<li>' + _tmp[memo].text + '</li>';
+	}
+$('#list').append(_text);
+})();
+MYAPP.display;
+
+$('#display').on('click', function(){
+var data = localStorage.getItem('bigData');
+_tmp = JSON.parse(data);
+$('#list').children().remove();
+	var _text = '';
+	for (var memo in _tmp) {
+	_text += '<li>' + _tmp[memo].text + '</li>';
+	}
+$('#list').append(_text);
+});
+
+
+//削除機能
+$('#delete').on('click', function(){
+	localStorage.clear();
+	$('#list').children().remove();
+});
+
+
+</script>
+
+</body>
+</html>
