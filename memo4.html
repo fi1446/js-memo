@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+<style>
+iframe {
+	display: block;
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+<button id="save">new</button>
+
+<h3>メモ一覧</h3>
+<ul id="list">
+</ul>
+</div>
+
+<div class="memopad">
+<input type="text" name="title" id="title">
+<button id="update">update</button>
+<button id="delete">delete</button>
+<button id="fav">star</button>
+<br>
+<button onclick="editor.execCommand('undo')">元に戻す</button>
+<button onclick="editor.execCommand('bold')">太字</button>
+<button onclick="editor.execCommand('italic')">斜体</button>
+
+<iframe></iframe>
+
+</div>
+
+<script src="jquery-1.12.3.min.js"></script>
+<script>
+    var editor = document.getElementsByTagName("iframe")[0].contentDocument;
+    var $editor = $('iframe:first').contents().find('body');
+    editor.designMode = "On";
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

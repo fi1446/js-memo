@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+</head>
+<body>
+
+	<div class="test"><b>テストだよ</b>だよ</div>
+<button onclick="editor.execCommand('undo')">元に戻す</button>
+<button onclick="editor.execCommand('bold')">太字</button>
+<button onclick="editor.execCommand('italic')">斜体</button>
+	<button id="test">test</button>
+	<button id="test2">test</button>
+<iframe></iframe>
+	<div class="text"><p></p></div>
+<script src="jquery-1.12.3.min.js"></script>
+<script>
+    var editor = document.getElementsByTagName("iframe")[0].contentDocument;
+    var $editor = $('iframe:first').contents().find('body');
+    editor.designMode = "On";
+
+$('#test').click(function(){
+	$('.text').children().remove();
+	$('.text').append('<p>' + $editor.html() + '</p>');
+	console.log($editor.html());
+});
+
+$('#test2').click(function(){
+	var $test = $('.test').html();
+	$editor.append($test);
+	console.log($test);
+});
+
+</script>
+
+
+
+</body>
+</html>

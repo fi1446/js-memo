@@ -7,8 +7,9 @@
 <body>
 
 <input type="text" name="text" id="text">
-<button id="save">button</button>
-<button id="display">display</button>
+<button id="save">new</button>
+<button id="update">update</button>
+<!-- <button id="display">display</button> -->
 <button id="delete">delete</button>
 
 <br>
@@ -19,10 +20,11 @@
 
 <script src="jquery-1.12.3.min.js"></script>
 <script>
+
 //グローバル変数（ネームスペース）宣言
 var MYAPP = MYAPP || {};
-//初期化データの格納場所
-MYAPP.tmpData = new Object();
+
+
 //メモをオブジェクト化する機能
 MYAPP.createMemo = function(text) {
 var that = {};
@@ -30,6 +32,8 @@ that.idx = Object.keys(MYAPP.storedData).length + 1;
 that.text = text;
 return that;
 };
+
+
 //初期化する際に最初のメモをオブジェクト化する機能
 MYAPP.initializeMemo = function(text) {
 var that = {};
@@ -37,10 +41,14 @@ that.idx = 1;
 that.text = text;
 return that;
 };
+
+
 //オブジェクトをLSにプッシュする機能
 var pushData = function(tmpData){
 localStorage.setItem('bigData', JSON.stringify(tmpData));
 };
+
+
 //LSのデータを一時的に引っ張ってくる機能
 MYAPP.storedData = (function() {
 var data = (function() {
@@ -49,42 +57,51 @@ return localStorage.getItem('bigData');
 var savedData = JSON.parse(data);
 return savedData;
 })();
+
+
 //初期化機能
 MYAPP.initData = (function() {
 var yourFirstMemo = "これが最初のメモです。";
+var firstData = {};
 if (MYAPP.storedData !== null) {
-return;
 } else {
 var datalist = (function() {
 return MYAPP.initializeMemo(yourFirstMemo);
 })();
 var tmpNum = 'memo' + datalist.idx;
-MYAPP.tmpData[tmpNum] = datalist;
-pushData(MYAPP.tmpData);
+firstData[tmpNum] = datalist;
+pushData(firstData);
 }
 })();
-//初期化
-MYAPP.initData;
+
+
 //メモの数の確認（デバッグ用）
 console.log(MYAPP.storedData);
-//メモのセーブ機能
+
+
+//メモのセーブ機能（新規追加）
 MYAPP.saveData = function(text) {
+if (text == '' || text == undefined) {
+	throw new Error('文字を入力してください。');
+}
 var bigData = MYAPP.storedData;
 var _tmp = new MYAPP.createMemo(text);
 var tmpNum = 'memo' + _tmp.idx;
-console.log(_tmp.idx);
-console.log(tmpNum);
 bigData[tmpNum] = _tmp;
 pushData(bigData);
+console.log('新しくメモが追加されました。')
+console.log(tmpNum);
 };
+
+
 //データの取得、格納、保存
-$(function(){
 $('#save').on('click', function(){
 var text = $(':text[name="text"]').val();
 MYAPP.saveData(text);
 $(':text[name="text"]').val('');
 });
-});
+
+
 //既存のメモを表示
 if (localStorage.bigData !== undefined) {
 var data = localStorage.getItem('bigData');
@@ -98,6 +115,8 @@ _text += '<li>' + _tmp[memo].text + '</li>';
 }
 $('#list').append(_text);
 }
+
+
 //表示機能
 MYAPP.display = (function(){
 var data = localStorage.getItem('bigData');
@@ -105,27 +124,67 @@ _tmp = JSON.parse(data);
 $('#list').children().remove();
 var _text = '';
 for (var memo in _tmp) {
-_text += '<li>' + _tmp[memo].text + '</li>';
+_text += '<li class=' + memo + '>' + _tmp[memo].text + '</li>';
 }
 $('#list').append(_text);
 })();
 MYAPP.display;
-//表示ボタンの機能
-$('#display').on('click', function(){
-var data = localStorage.getItem('bigData');
-_tmp = JSON.parse(data);
-$('#list').children().remove();
-var _text = '';
-for (var memo in _tmp) {
-_text += '<li>' + _tmp[memo].text + '</li>';
-}
-$('#list').append(_text);
-});
+
+
 //削除機能
 $('#delete').on('click', function(){
 localStorage.clear();
 $('#list').children().remove();
 });
+
+
+//メモを取得する方法
+MYAPP.retrieveData = function(n) {
+var datalist = MYAPP.storedData;
+var text = datalist[n].text;
+return text;
+};
+
+
+//メモの復活
+$('#list li').click(function(){
+var _idx = $(this).attr('class');
+console.log('これは' + _idx + 'です。');
+var _text = MYAPP.retrieveData(_idx);
+$('#text').val(_text).attr('class', _idx);
+});
+
+
+//データの更新機能
+MYAPP.updateData = function(text, idx) {
+if (text == '' || text == undefined) {
+	throw new Error('メモが入力されていません。');
+} else if (idx == undefined) {
+	throw new Error('まずは新しくメモを追加してください。');
+} else {
+var bigData = MYAPP.storedData;
+bigData[idx].text = text;
+pushData(bigData);
+}
+};
+
+
+//データの更新
+$('#update').on('click', function(){
+	$text = $(':text[name="text"]').val();
+	if ($text !== '' || $text !== undefined) {
+var _text = $(':text[name="text"]').val();
+var _idx = $(':text[name="text"]').attr('class');
+MYAPP.updateData(_text, _idx);
+} else {
+	console.log('更新に失敗しました。');
+	return false;
+}
+console.log('メモが更新されました。')
+});
+
+
+
 </script>
 
 </body>
