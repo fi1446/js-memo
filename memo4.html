@@ -23,24 +23,206 @@ iframe {
 <input type="text" name="title" id="title">
 <button id="update">update</button>
 <button id="delete">delete</button>
-<button id="fav">star</button>
+<button id="fav" class="">star</button>
 <br>
 <button onclick="editor.execCommand('undo')">元に戻す</button>
 <button onclick="editor.execCommand('bold')">太字</button>
 <button onclick="editor.execCommand('italic')">斜体</button>
 
-<iframe></iframe>
+<iframe id="editor"></iframe>
 
 </div>
 
+
 <script src="jquery-1.12.3.min.js"></script>
 <script>
-    var editor = document.getElementsByTagName("iframe")[0].contentDocument;
-    var $editor = $('iframe:first').contents().find('body');
+
+var editor = document.getElementsByTagName("iframe")[0].contentDocument;
+
+var Memo = (function(){
+
+function Memo() {
+}
+
+var elSet = function() {
+	var $save = $('#save');
+};
+
+Memo.prototype.firstMemo = function() {
+	var memo1 = {};
+		memo1.idx = 1;
+		memo1.title = '最初のメモ';
+		memo1.text = "これが最初のメモです。";
+		memo1.fav = undefined;
+	return memo1;
+};
+
+Memo.prototype.init = function() {
+	var _that = this;
+	_that.setEditor();
+	_that.view();
+	_that.favView();
+	var bigData = localStorage.bigData;
+	var initData = {};
+	var _idx = 'memo1';
+	initData[_idx] = _that.firstMemo();
+	if (bigData === undefined || bigData === null) {
+		pushData(initData);
+	}
+};
+
+Memo.prototype.setEditor = function() {
     editor.designMode = "On";
+};
+
+Memo.prototype.save = function() {
+	saveNewData(setText());
+};
+
+Memo.prototype.favView = function() {
+	var $fav = $('#fav').attr('class');
+	if ($fav) { $('#fav').hide() }
+};
+
+Memo.prototype.getData = function(n) {
+	_idx = n;
+	console.log('これは' + _idx + 'です。');
+	var _data = retrieveData(_idx);
+	var $editor = $('iframe:first').contents().find('body');
+	$editor.html(_data.text);
+	if (_data.fav === 'fav') { $('#fav').attr('class', _data.fav); }
+	else if (!_data.fav) { $('#fav').removeClass('fav'); }
+	$(':text[name="title"]').val(_data.title);
+	$('#editor').attr('class', _idx);
+};
+
+Memo.prototype.view = function() {
+	var data = pullData();
+	$('#list').children().remove();
+	var _text = '';
+	for (var memo in data) {
+	_text += '<li class=' + memo + '>' + data[memo].title + '</li>';
+	}
+	$('#list').append(_text);
+};
+
+return Memo;
+
+})();
+
+//オブジェクト生成、初期化
+var memo = new Memo();
+memo.init();
+
+//操作：セーブ
+$('#save').click(function() {
+	memo.save();
+});
+
+$('#list li').click(function(){
+	var _idx = $(this).attr('class');
+	memo.getData(_idx);
+});
+
+//メモの作成機能
+function createMemo(title, text) {
+var newObj = {};
+newObj.idx = Object.keys(pullData()).length + 1;
+newObj.title = title;
+newObj.text = text;
+newObj.fav = undefined;
+return newObj;
+}
+
+//メモの更新機能
+function pushData(tmpData) {
+localStorage.setItem('bigData', JSON.stringify(tmpData));
+}
+
+//メモを一時的に引っ張ってくる
+function pullData() {
+var data = (function() {
+return localStorage.getItem('bigData');
+})();
+var savedData = JSON.parse(data);
+return savedData;
+}
+
+
+// ! ここまで !
+//メモのセーブ機能（新規追加）
+function saveNewData(text) {
+if (text == '' || text == undefined) {
+	throw new Error('文字を入力してください。');
+}
+var bigData = pullData();
+var _data = new createMemo(title, text);
+var _idx = 'memo' + _data.idx;
+bigData[_idx] = _data;
+pushData(bigData);
+console.log('新しくメモが追加されました。')
+console.log(_idx);
+}
+
+//メモの更新機能
+function updateData(title, text, idx, fav) {
+if (text === '' || text === undefined) {
+	throw new Error('メモが入力されていません。');
+} else if (idx === undefined) {
+	throw new Error('まずは新しくメモを追加してください。');
+} else {
+var bigData = pullData();
+bigData[idx].title = title;
+bigData[idx].text = text;
+var _fav;
+if (fav === undefined || fav === '') { _fav = undefined; }
+else if (fav === 'fav') { _fav = fav; }
+bigData[idx].fav = _fav;
+pushData(bigData);
+}
+}
+
+$('#update').on('click', function(){
+	$text = $(':text[name="text"]').val();
+	if ($text !== '' || $text !== undefined) {
+var _title = $(':text[name="title"]').val();
+var _text = setText();
+var _idx = $('#editor').attr('class');
+var _fav = $('#fav').attr('class');
+updateData(_title, _text, _idx, _fav);
+} else {
+	console.log('更新に失敗しました。');
+	return false;
+}
+console.log('メモが更新されました。')
+});
+
+
+function setText(){
+var $editor = $('iframe:first').contents().find('body');
+var text = $editor.html();
+return text;
+}
+
+
+$('#fav').click(function(){
+	var $fav = $('#fav').attr('class');
+	console.log($fav);
+	if (!$fav) { $('#fav').attr('class', 'fav'); }
+	else if ($fav !== undefined) { $('#fav').removeClass('fav'); }
+});
+
+
+function retrieveData(n) {
+var datalist = pullData();
+var data = datalist[n];
+return data;
+}
+
+
+
+
 </script>
-
-
 
 
 

@@ -152,6 +152,8 @@ var _idx = $(this).attr('class');
 console.log('これは' + _idx + 'です。');
 var _text = MYAPP.retrieveData(_idx);
 $('#text').val(_text).attr('class', _idx);
+var _text = MYAPP.retrieveData(_idx);
+$('').val(_text).attr('class', _idx);
 });
 
 

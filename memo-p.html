@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+</head>
+<body>
+
+<input type="text" name="text" id="text">
+<button id="save">button</button>
+<button id="display">display</button>
+<button id="delete">delete</button>
+
+<br>
+<h2>最新のメモ：</h2>
+<ul id="list">
+</ul>
+
+
+<script src="jquery-1.12.3.min.js"></script>
+<script>
+
+
+var Memo = (function(){
+
+function Memo() {
+}
+
+Memo.prototype.save = function() {
+var _that = this;
+// _that.elSet.$save.click(function() {
+var text = _that.elSet.$text.val();
+saveNewData(text);
+_that.elSet.$text.val('');
+// });
+};
+
+Memo.prototype.elSet = {
+	$save: $('#save'),
+	$text: $(':text[name="text"]')
+};
+
+
+
+return Memo;
+
+})();
+
+var memo = new Memo();
+
+$('#save').click(function() {
+memo.save();
+});
+
+//メモの作成機能
+function createMemo(text) {
+var that = {};
+that.idx = Object.keys(pullData()).length + 1;
+that.text = text;
+return that;
+}
+
+//メモの更新機能
+function pushData(tmpData) {
+localStorage.setItem('bigData', JSON.stringify(tmpData));
+}
+
+//メモを一時的に引っ張ってくる
+function pullData() {
+var data = (function() {
+return localStorage.getItem('bigData');
+})();
+var savedData = JSON.parse(data);
+return savedData;
+}
+
+//メモのセーブ機能（新規追加）
+function saveNewData(text) {
+if (text == '' || text == undefined) {
+	throw new Error('文字を入力してください。');
+}
+var bigData = pullData();
+var _data = new createMemo(text);
+var _idx = 'memo' + _data.idx;
+bigData[_idx] = _data;
+pushData(bigData);
+console.log('新しくメモが追加されました。')
+console.log(_idx);
+}
+
+//メモの更新機能
+function updateData(text, idx) {
+if (text == '' || text == undefined) {
+	throw new Error('メモが入力されていません。');
+} else if (idx == undefined) {
+	throw new Error('まずは新しくメモを追加してください。');
+} else {
+var bigData = pullData();
+bigData[idx].text = text;
+pushData(bigData);
+}
+}
+
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>
