@@ -10,15 +10,22 @@ iframe {
 .fav {
 	border: 1px solid red;
 }
+#list_fav {
+	display: none;
+}
 </style>
 </head>
 <body>
 
 <div class="sidebar">
 <button id="save">new</button>
+<button id="fav-list">favorite</button>
+
 
 <h3>メモ一覧</h3>
 <ul id="list">
+</ul>
+<ul id="list_fav">
 </ul>
 </div>
 
@@ -61,15 +68,16 @@ Memo.prototype.firstMemo = function() {
 
 Memo.prototype.init = function() {
 	var _that = this;
-	_that.setEditor();
-	_that.view();
 	var bigData = localStorage.bigData;
-	var initData = {};
-	var _idx = 'memo1';
-	initData[_idx] = _that.firstMemo();
+	_that.setEditor();
 	if (bigData === undefined || bigData === null) {
+		var initData = {};
+		var _idx = 'memo1';
+		initData[_idx] = _that.firstMemo();
 		pushData(initData);
 	}
+	_that.view();
+	_that.viewFav();
 };
 
 Memo.prototype.setEditor = function() {
@@ -85,7 +93,8 @@ Memo.prototype.emptyTexts = function() {
 Memo.prototype.save = function() {
 	var _that = this;
 	saveNewData(setTitle(), setText());
-	// _that.emptyTexts();
+	_that.emptyTexts();
+	_that.view();
 };
 
 Memo.prototype.update = function() {
@@ -100,9 +109,12 @@ Memo.prototype.update = function() {
 		return;
 	}
 	console.log('メモが更新されました。');
+	_that.view();
+	_that.viewFav();
 };
 
 Memo.prototype.fav = function() {
+	var _that = this;
 	var data = pullData();
 	var _idx = $('#editor').attr('class');
 	var _title = data[_idx].title;
@@ -115,16 +127,17 @@ Memo.prototype.fav = function() {
 		return;
 	}
 	console.log('メモが更新されました。');
+	_that.viewFav();
 };
-
 
 Memo.prototype.delete = function() {
 	var _that = this;
 	var _idx = $('#editor').attr('class');
 	deleteData(_idx);
-	// _that.emptyTexts();
+	_that.emptyTexts();
+	_that.view();
+	_that.viewFav();
 };
-
 
 Memo.prototype.getData = function(n) {
 	_idx = n;
@@ -143,9 +156,24 @@ Memo.prototype.view = function() {
 	$('#list').children().remove();
 	var _text = '';
 	for (var memo in data) {
-	_text += '<li class=' + memo + '>' + data[memo].title + '</li>';
+		if (data[memo].idx === null) { continue; }
+		_text += '<li class=' + memo + '>' + data[memo].title + '</li>';
 	}
 	$('#list').append(_text);
+};
+
+Memo.prototype.viewFav = function() {
+	var data = pullData();
+	$('#list_fav').children().remove();
+	var _text = '';
+	for (var memo in data) {
+		if (data[memo].idx === null) { continue; }
+		else if (data[memo].fav === 'fav') {
+			_text += '<li class=' + memo + '>' + data[memo].title + '</li>';
+		}
+		else { continue; }
+	}
+	$('#list_fav').append(_text);
 };
 
 return Memo;
@@ -159,13 +187,11 @@ memo.init();
 //操作：セーブ
 $('#save').click(function() {
 	memo.save();
-	memo.init();
 });
 
 //操作：アップデート
 $('#update').on('click', function(){
 	memo.update();
-	memo.init();
 });
 
 //操作：お気に入り登録
@@ -179,14 +205,19 @@ $('#fav').click(function(){
 //操作：削除
 $('#delete').click(function(){
 	memo.delete();
-	memo.init();
+});
+
+$('#fav-list').click(function(){
+	$('#list').toggle();
+	$('#list_fav').toggle();
 });
 
 //操作：一覧から編集したいメモを選ぶ
-$('#list li').click(function(){
+$(document).on('click', '#list li, #list_fav li', function(){
 	var _idx = $(this).attr('class');
 	memo.getData(_idx);
 });
+
 
 //メモの作成機能
 function createMemo(title, text) {
@@ -227,6 +258,7 @@ function saveNewData(title, text) {
 	pushData(bigData);
 	console.log('新しくメモが追加されました。')
 	console.log(_idx);
+	$('#list').append('<li class=' + _idx + '>' + _data.title + '</li>');
 }
 
 //メモの更新機能
@@ -255,8 +287,8 @@ if (idx === undefined) {
 	throw new Error('深刻なエラーが発生しました。');
 } else {
 var bigData = pullData();
-if (window.confirm('本当にメモを削除してもよろしいですか？')){
-	delete bigData[idx];
+if (window.confirm('本当にメモを削除してもよろしいですか？\n削除すると、このメモは二度と編集できません。')) {
+	bigData[idx].idx = null;
 }
 pushData(bigData);
 }
