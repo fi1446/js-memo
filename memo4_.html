@@ -76,8 +76,16 @@ Memo.prototype.setEditor = function() {
     editor.designMode = "On";
 };
 
+Memo.prototype.emptyTexts = function() {
+	$(':text[name="title"]').val('');
+	$('iframe:first').contents().find('body').html('');
+	$('#fav').removeClass('fav');
+};
+
 Memo.prototype.save = function() {
+	var _that = this;
 	saveNewData(setTitle(), setText());
+	// _that.emptyTexts();
 };
 
 Memo.prototype.update = function() {
@@ -110,10 +118,13 @@ Memo.prototype.fav = function() {
 };
 
 
-// Memo.prototype.favView = function() {
-// 	var $fav = $('#fav').attr('class');
-// 	if ($fav) { $('#fav').hide() }
-// };
+Memo.prototype.delete = function() {
+	var _that = this;
+	var _idx = $('#editor').attr('class');
+	deleteData(_idx);
+	// _that.emptyTexts();
+};
+
 
 Memo.prototype.getData = function(n) {
 	_idx = n;
@@ -148,11 +159,13 @@ memo.init();
 //操作：セーブ
 $('#save').click(function() {
 	memo.save();
+	memo.init();
 });
 
 //操作：アップデート
 $('#update').on('click', function(){
 	memo.update();
+	memo.init();
 });
 
 //操作：お気に入り登録
@@ -161,6 +174,12 @@ $('#fav').click(function(){
 	if (!$fav) { $('#fav').attr('class', 'fav'); }
 	else { $('#fav').removeClass('fav'); }
 	memo.fav();
+});
+
+//操作：削除
+$('#delete').click(function(){
+	memo.delete();
+	memo.init();
 });
 
 //操作：一覧から編集したいメモを選ぶ
@@ -195,19 +214,19 @@ function pullData() {
 
 //メモのセーブ機能（新規追加）
 function saveNewData(title, text) {
-if (text == '' || text == undefined) {
-	throw new Error('文字を入力してください。');
-}
-if (title == '' || title == undefined) {
-	title = '無題のメモ';
-}
-var bigData = pullData();
-var _data = new createMemo(title, text);
-var _idx = 'memo' + _data.idx;
-bigData[_idx] = _data;
-pushData(bigData);
-console.log('新しくメモが追加されました。')
-console.log(_idx);
+	if (text == '' || text == undefined) {
+		throw new Error('文字を入力してください。');
+	}
+	if (title == '' || title == undefined) {
+		title = '無題のメモ';
+	}
+	var bigData = pullData();
+	var _data = new createMemo(title, text);
+	var _idx = 'memo' + _data.idx;
+	bigData[_idx] = _data;
+	pushData(bigData);
+	console.log('新しくメモが追加されました。')
+	console.log(_idx);
 }
 
 //メモの更新機能
@@ -231,26 +250,36 @@ pushData(bigData);
 }
 }
 
-
+function deleteData(idx) {
+if (idx === undefined) {
+	throw new Error('深刻なエラーが発生しました。');
+} else {
+var bigData = pullData();
+if (window.confirm('本当にメモを削除してもよろしいですか？')){
+	delete bigData[idx];
+}
+pushData(bigData);
+}
+}
 
 //テキストのセット
 function setText() {
-var $editor = $('iframe:first').contents().find('body');
-var text = $editor.html();
-return text;
+	var $editor = $('iframe:first').contents().find('body');
+	var text = $editor.html();
+	return text;
 }
 
 //タイトルのセット
 function setTitle() {
-var title = $(':text[name="title"]').val();
-return title;
+	var title = $(':text[name="title"]').val();
+	return title;
 }
 
 
 function retrieveData(n) {
-var datalist = pullData();
-var data = datalist[n];
-return data;
+	var datalist = pullData();
+	var data = datalist[n];
+	return data;
 }
 
 </script>
