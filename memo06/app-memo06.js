@@ -1,4 +1,3 @@
-/*jslint nomen: true*/
 var Memo = (function () {
 
     'use strict';

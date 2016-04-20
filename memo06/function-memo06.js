@@ -1,4 +1,3 @@
-/*jslint nomen: true*/
 'use strict';
 
 //メモの作成機能
