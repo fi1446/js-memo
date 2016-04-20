@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <button id="btn-save">new</button>
+        <button id="btn-favlist">favorite</button>
+
+        <h3>メモ一覧</h3>
+        <ul id="list">
+        </ul>
+        <ul id="list-fav">
+        </ul>
+    </div>
+
+    <div class="memopad">
+
+        <input type="text" name="title" id="title">
+        <button id="btn-update">update</button>
+        <button id="btn-delete">delete</button>
+        <button id="btn-fav" class="">star</button>
+        <br>
+        <button onclick="editor.execCommand('undo')">元に戻す</button>
+        <button onclick="editor.execCommand('bold')">太字</button>
+        <button onclick="editor.execCommand('italic')">斜体</button>
+
+        <iframe id="editor"></iframe>
+
+    </div>
+
+    <script src="jquery-1.12.3.min.js"></script>
+    <script src="model-memo06.js"></script>
+    <script src="function-memo06.js"></script>
+    <script src="app-memo06.js"></script>
+
+    <script>
+        'use strict';
+
+        //操作：セーブ
+        elSet.$save.click(function() {
+            memo.save();
+        });
+
+        //操作：アップデート
+        elSet.$update.on('click', function() {
+            memo.update();
+        });
+
+        //操作：お気に入り登録
+        elSet.$fav.click(function() {
+            var $fav = elSet.$fav.attr('class');
+            if (!$fav) {
+                elSet.$fav.attr('class', 'fav');
+            } else {
+                elSet.$fav.removeClass('fav');
+            }
+            memo.fav();
+        });
+
+        //操作：削除
+        elSet.$delete.click(function() {
+            memo.trash();
+        });
+
+        //操作：お気に入りのみ表示、全体表示のトグル
+        elSet.$favBtn.click(function() {
+            elSet.$list.toggle();
+            elSet.$favList.toggle();
+        });
+
+        //操作：一覧から編集したいメモを選ぶ ※documentを指定しないと動的に生成されたDOMを選択できない
+        $(document).on('click', '#list li, #list-fav li', function() {
+            var _idx = $(this).attr('class');
+            memo.getData(_idx);
+        });
+    </script>
+
+</body>
+
+</html>

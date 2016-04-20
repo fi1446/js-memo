@@ -1,0 +1,9 @@
+iframe {
+    display: block;
+}
+.fav {
+    border: 1px solid red;
+}
+#list-fav {
+    display: none;
+}
