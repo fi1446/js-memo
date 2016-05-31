@@ -73,13 +73,13 @@ function deleteData(idx) {
 
 //テキストのセット ※関数なのは初期状態を変数にしまわぬように動的に取得するため
 function setText() {
-    var text = elSet.$editor.contents().find('body').html();
+    var text = $('#editor').contents().find('body').html();
     return text;
 }
 
 //タイトルのセット ※関数なのは初期状態を変数にしまわぬように動的に取得するため
 function setTitle() {
-    var title = elSet.$title.val();
+    var title = $('#title').val();
     return title;
 }
 

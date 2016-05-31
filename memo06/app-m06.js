@@ -95,9 +95,9 @@ var Memo = (function () {
     //リストからメモの情報を引っ張ってくる機能の処理
     Memo.prototype.getData = function (n) {
         var idx = n,
-            data = retrieveData(_idx),
+            data = retrieveData(idx),
             editor = $('#editor').contents().find('body');
-        editor.html(_data.text);
+        editor.html(data.text);
         if (data.fav === 'fav') {
             $('#btn-fav').attr('class', data.fav);
         } else if (!data.fav) {
