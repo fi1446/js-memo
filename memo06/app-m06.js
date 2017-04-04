@@ -23,7 +23,7 @@ var Memo = (function () {
         if (bigData === undefined || bigData === null) {
             var initData = {},
                 idx = 'memo1';
-            initData[idx] = _that.firstMemo();
+            initData[idx] = that.firstMemo();
             pushData(initData);
         }
         that.view();
